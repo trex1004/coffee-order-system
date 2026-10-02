@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:13306/coffee_test?sessionVariables=innodb_lock_wait_timeout=3
+  sql:
+    init:
+      mode: never

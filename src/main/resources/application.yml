@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: coffee-order-system
+  datasource:
+    url: jdbc:mysql://localhost:13306/coffee?sessionVariables=innodb_lock_wait_timeout=3
+    username: coffee
+    password: coffee
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
