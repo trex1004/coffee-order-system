@@ -1,6 +1,8 @@
 package com.example.coffeeordersystem.domain.user.entity;
 
 import com.example.coffeeordersystem.global.entity.BaseEntity;
+import com.example.coffeeordersystem.global.exception.BusinessException;
+import com.example.coffeeordersystem.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,5 +39,12 @@ public class User extends BaseEntity {
 
     public void charge(long amount) {
         this.point += amount;
+    }
+
+    public void use(long amount) {
+        if (point < amount) {
+            throw new BusinessException(ErrorCode.INSUFFICIENT_POINT);
+        }
+        this.point -= amount;
     }
 }

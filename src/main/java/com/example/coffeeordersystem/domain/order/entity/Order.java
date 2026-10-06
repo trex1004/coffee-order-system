@@ -37,6 +37,9 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> items = new ArrayList<>();
 
+    @Column(name = "balance_after", nullable = false)
+    private long balanceAfter;
+
     private Order(Long userId, String idempotencyKey) {
         this.userId = userId;
         this.idempotencyKey = idempotencyKey;
@@ -51,5 +54,9 @@ public class Order extends BaseEntity {
         items.add(item);
         item.assignTo(this);
         this.totalAmount += item.getLineAmount();
+    }
+
+    public void recordBalance(long balanceAfter) {
+        this.balanceAfter = balanceAfter;
     }
 }

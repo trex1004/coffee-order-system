@@ -1,6 +1,8 @@
 package com.example.coffeeordersystem.domain.menu.entity;
 
 import com.example.coffeeordersystem.global.entity.BaseEntity;
+import com.example.coffeeordersystem.global.exception.BusinessException;
+import com.example.coffeeordersystem.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,5 +39,12 @@ public class Menu extends BaseEntity {
 
     public MenuStatus getStatus() {
         return stock <= 0 ? MenuStatus.SOLD_OUT : MenuStatus.AVAILABLE;
+    }
+
+    public void deduct(int quantity) {
+        if (stock < quantity) {
+            throw new BusinessException(ErrorCode.INSUFFICIENT_STOCK);
+        }
+        this.stock -= quantity;
     }
 }

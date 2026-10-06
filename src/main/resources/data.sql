@@ -18,27 +18,25 @@ VALUES (1, '아메리카노', 4500, 95, NOW() - INTERVAL 30 DAY),
        (10, '말차라떼', 6000, 2, NOW() - INTERVAL 30 DAY);
 
 -- 주문: 7일 바깥 (집계에서 제외되어야 함)
-INSERT INTO orders (id, user_id, idempotency_key, total_amount, created_at)
-VALUES (1, 1, 'seed-1', 3500, NOW() - INTERVAL 10 DAY),
-       (2, 1, 'seed-2', 3500, NOW() - INTERVAL 10 DAY),
-       (3, 1, 'seed-3', 3500, NOW() - INTERVAL 9 DAY),
-       (4, 1, 'seed-4', 3500, NOW() - INTERVAL 9 DAY),
-       (5, 1, 'seed-5', 3500, NOW() - INTERVAL 8 DAY),
-       (6, 1, 'seed-6', 3500, NOW() - INTERVAL 180 HOUR);
--- 7일 12시간 전, 경계 바깥
+INSERT INTO orders (id, user_id, idempotency_key, total_amount, balance_after, created_at)
+VALUES (1, 1, 'seed-1', 3500, 996500, NOW() - INTERVAL 10 DAY),
+       (2, 1, 'seed-2', 3500, 993000, NOW() - INTERVAL 10 DAY),
+       (3, 1, 'seed-3', 3500, 989500, NOW() - INTERVAL 9 DAY),
+       (4, 1, 'seed-4', 3500, 986000, NOW() - INTERVAL 9 DAY),
+       (5, 1, 'seed-5', 3500, 982500, NOW() - INTERVAL 8 DAY),
+       (6, 1, 'seed-6', 3500, 979000, NOW() - INTERVAL 180 HOUR);
 
 -- 주문: 7일 안쪽 (집계 대상)
-INSERT INTO orders (id, user_id, idempotency_key, total_amount, created_at)
-VALUES (7, 1, 'seed-7', 4500, NOW() - INTERVAL 156 HOUR), -- 6일 12시간 전, 경계 안쪽
-       (8, 1, 'seed-8', 9500, NOW() - INTERVAL 5 DAY),
-       (9, 1, 'seed-9', 4500, NOW() - INTERVAL 4 DAY),
-       (10, 1, 'seed-10', 10000, NOW() - INTERVAL 3 DAY),
-       (11, 1, 'seed-11', 4500, NOW() - INTERVAL 2 DAY),
-       (12, 1, 'seed-12', 10500, NOW() - INTERVAL 2 DAY),
-       (13, 1, 'seed-13', 10500, NOW() - INTERVAL 1 DAY),
-       (14, 1, 'seed-14', 10000, NOW() - INTERVAL 1 DAY),
-       (15, 1, 'seed-15', 11500, NOW() - INTERVAL 6 HOUR);
-
+INSERT INTO orders (id, user_id, idempotency_key, total_amount, balance_after, created_at)
+VALUES (7, 1, 'seed-7', 4500, 974500, NOW() - INTERVAL 156 HOUR),
+       (8, 1, 'seed-8', 9500, 965000, NOW() - INTERVAL 5 DAY),
+       (9, 1, 'seed-9', 4500, 960500, NOW() - INTERVAL 4 DAY),
+       (10, 1, 'seed-10', 10000, 950500, NOW() - INTERVAL 3 DAY),
+       (11, 1, 'seed-11', 4500, 946000, NOW() - INTERVAL 2 DAY),
+       (12, 1, 'seed-12', 10500, 935500, NOW() - INTERVAL 2 DAY),
+       (13, 1, 'seed-13', 10500, 925000, NOW() - INTERVAL 1 DAY),
+       (14, 1, 'seed-14', 10000, 915000, NOW() - INTERVAL 1 DAY),
+       (15, 1, 'seed-15', 11500, 903500, NOW() - INTERVAL 6 HOUR);
 -- 주문 항목
 INSERT INTO order_items (order_id, menu_id, quantity, line_amount)
 VALUES (1, 6, 1, 3500),

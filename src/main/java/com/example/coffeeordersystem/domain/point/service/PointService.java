@@ -13,6 +13,7 @@ import com.example.coffeeordersystem.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -48,5 +49,18 @@ public class PointService {
             throw new BusinessException(ErrorCode.IDEMPOTENCY_KEY_CONFLICT);
         }
         return new ChargeResponse(history.getUserId(), history.getAmount(), history.getBalanceAfter());
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public User lockUser(Long userId) {
+        return userRepository.findByIdForUpdate(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public long use(User user, long amount) {
+        user.use(amount);
+        pointHistoryRepository.save(PointHistory.use(user.getId(), amount, user.getPoint()));
+        log.debug("포인트 사용 userId={} amount={} balance={}", user.getId(), amount, user.getPoint());
+        return user.getPoint();
     }
 }
