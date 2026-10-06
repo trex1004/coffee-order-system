@@ -34,4 +34,8 @@ public class User extends BaseEntity {
     public static User of(String email, String name) {
         return new User(email, name);
     }
+
+    public void charge(long amount) {
+        this.point += amount;
+    }
 }
