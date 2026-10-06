@@ -1,6 +1,7 @@
 package com.example.coffeeordersystem.domain.menu.controller;
 
 import com.example.coffeeordersystem.domain.menu.dto.MenuResponse;
+import com.example.coffeeordersystem.domain.menu.dto.PopularMenuResponse;
 import com.example.coffeeordersystem.domain.menu.service.MenuService;
 import com.example.coffeeordersystem.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,10 @@ public class MenuController {
     @GetMapping
     public ApiResponse<List<MenuResponse>> getMenu() {
         return ApiResponse.success(menuService.getMenus());
+    }
+
+    @GetMapping("/popular")
+    public ApiResponse<List<PopularMenuResponse>> getPopularMenus() {
+        return ApiResponse.success(menuService.getPopularMenus());
     }
 }
