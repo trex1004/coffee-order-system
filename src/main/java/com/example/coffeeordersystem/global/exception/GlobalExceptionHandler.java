@@ -2,6 +2,7 @@ package com.example.coffeeordersystem.global.exception;
 
 import com.example.coffeeordersystem.global.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -63,6 +64,11 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<ApiResponse<Void>> handleInvalidRequest(Exception e) {
         return respond(ErrorCode.INVALID_REQUEST, e);
+    }
+
+    @ExceptionHandler(CannotAcquireLockException.class)
+    public ResponseEntity<ApiResponse<Void>> handleLockTimeout(Exception e) {
+        return respond(ErrorCode.LOCK_TIMEOUT, e);
     }
 
     // 예상하지 못한 것
