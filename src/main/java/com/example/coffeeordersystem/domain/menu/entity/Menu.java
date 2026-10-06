@@ -35,7 +35,7 @@ public class Menu extends BaseEntity {
         return new Menu(name, price, stock);
     }
 
-    public boolean isSoldOut() {
-        return stock <= 0;
+    public MenuStatus getStatus() {
+        return stock <= 0 ? MenuStatus.SOLD_OUT : MenuStatus.AVAILABLE;
     }
 }
