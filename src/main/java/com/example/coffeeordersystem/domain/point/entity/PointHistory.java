@@ -1,4 +1,4 @@
-package com.example.coffeeordersystem.domain.pointhistory.entity;
+package com.example.coffeeordersystem.domain.point.entity;
 
 import com.example.coffeeordersystem.global.entity.BaseEntity;
 import jakarta.persistence.*;
