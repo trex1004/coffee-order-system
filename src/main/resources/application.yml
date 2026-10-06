@@ -3,6 +3,8 @@ spring:
     name: coffee-order-system
   datasource:
     url: jdbc:mysql://localhost:13306/coffee?sessionVariables=innodb_lock_wait_timeout=3
+#    hikari:
+#      maximum-pool-size: 5
     username: coffee
     password: coffee
   jpa:
