@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 /**
  * 주문 처리의 트랜잭션 경계 밖 흐름을 조율한다.
- * 멱등성 사전 조회와 재조회, 트랜잭션 전체 재시도를 담당한다.
  * OrderService의 트랜잭션이 롤백된 이후에는
  * 새로운 트랜잭션으로 재시도해야 하므로 재시도 로직은 여기서 수행한다.
  * 실제 주문 처리와 데이터 변경은 OrderService가 하나의 트랜잭션으로 수행한다.
@@ -36,52 +35,20 @@ public class OrderFacade {
     private final OrderService orderService;
     private final OrderRepository orderRepository;
 
-    private static final long BACKOFF_MILLIS = 50L;
-    private static final int MAX_ATTEMPTS = 3;
-
     public OrderResult order(OrderRequest request, String key) {
         validateNoDuplicateMenu(request.items());
         return orderRepository.findByUserIdAndIdempotencyKey(request.userId(), key)
                 .map(found -> new OrderResult(replay(found, request), false))
-                .orElseGet(() -> placeWithRetry(request, key));
+                .orElseGet(() -> place(request, key));
     }
 
-    // 주문을 실행하고 데드락이면 트랜잭션 전체를 재시도한다
-    private OrderResult placeWithRetry(OrderRequest request, String key) {
-        for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-            try {
-                return new OrderResult(orderService.place(request, key), true);
-            } catch (CannotAcquireLockException e) {
-                if (isLockTimeout(e)) {
-                    throw e;
-                }
-                sleepBackoff(attempt);
-            } catch (DataIntegrityViolationException e) {
-                return orderRepository.findByUserIdAndIdempotencyKey(request.userId(), key)
-                        .map(found -> new OrderResult(replay(found, request), false))
-                        .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_CONFLICT));
-            }
-        }
-        throw new BusinessException(ErrorCode.ORDER_CONFLICT);
-    }
-
-    // 락 대기 타임아웃인지 판별한다
-    private boolean isLockTimeout(Throwable e) {
-        for (Throwable t = e; t != null; t = t.getCause()) {
-            if (t instanceof LockTimeoutException) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // 재시도 전에 대기한다
-    private void sleepBackoff(int attempt) {
+    private OrderResult place(OrderRequest request, String key) {
         try {
-            Thread.sleep(BACKOFF_MILLIS * attempt);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new BusinessException(ErrorCode.ORDER_CONFLICT);
+            return new OrderResult(orderService.place(request, key), true);
+        } catch (DataIntegrityViolationException e) {
+            return orderRepository.findByUserIdAndIdempotencyKey(request.userId(), key)
+                    .map(found -> new OrderResult(replay(found, request), false))
+                    .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_CONFLICT));
         }
     }
 
