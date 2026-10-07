@@ -27,6 +27,7 @@ public class OrderService {
     private final MenuService menuService;
 
 
+    // 재고와 포인트를 차감하고 주문을 만든다
     @Transactional
     public OrderResponse place(OrderRequest request, String idempotencyKey) {
         User user = pointService.lockUser(request.userId());
@@ -44,6 +45,7 @@ public class OrderService {
         return OrderResponse.of(order);
     }
 
+    // 메뉴 ID 오름차순으로 정렬한다
     private List<OrderItemRequest> sortedByMenuId(List<OrderItemRequest> items) {
         return items.stream()
                 .sorted(Comparator.comparing(OrderItemRequest::menuId))
