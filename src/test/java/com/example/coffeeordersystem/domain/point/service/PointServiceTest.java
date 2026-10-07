@@ -19,11 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.function.IntConsumer;
 
+
+import static com.example.coffeeordersystem.support.ConcurrencyTestSupport.runConcurrently;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -54,34 +52,6 @@ class PointServiceTest {
 //        userRepository.deleteAllInBatch();
 //    }
 
-    private List<Throwable> runConcurrently(int threadCount, IntConsumer task) throws InterruptedException {
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-
-        // 모든 스레드가 준비될 때까지 대기시킨 후 동시에 작업을 시작하기 위한 latch
-        CountDownLatch start = new CountDownLatch(1);
-
-        // 모든 작업이 완료될 때까지 테스트 스레드가 대기하기 위한 latch
-        CountDownLatch done = new CountDownLatch(threadCount);
-        List<Throwable> failures = Collections.synchronizedList(new ArrayList<>());
-
-        for (int i = 0; i < threadCount; i++) {
-            int index = i;
-            executor.submit(() -> {
-                try {
-                    start.await();
-                    task.accept(index);
-                } catch (Throwable t) {
-                    failures.add(t);
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
-        start.countDown();
-        done.await();
-        executor.shutdown();
-        return failures;
-    }
 
     @Test
     void 동시_충전_두_건의_응답_잔액이_겹치지_않는다() throws Exception {
